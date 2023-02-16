@@ -4,17 +4,17 @@ CREATE DATABASE IF NOT EXISTS shop;
 
 CREATE TABLE books(
     N INT NOT NULL PRIMARY KEY,
-    code_book INT NOT NULL DEFAULT 0,
+    code_book INT NOT NULL,
     new VARCHAR(3) NOT NULL DEFAULT 'No',
     book_title VARCHAR(100) NOT NULL DEFAULT '',
     price FLOAT(4,2),
     publisher VARCHAR(20) NOT NULL,
-    pages INT DEFAULT NULL,
+    pages INT NOT NULL CHECK(pages>0),
     format VARCHAR(12) DEFAULT NULL,
     date_book DATE DEFAULT NULL,
-    tirage INT DEFAULT NULL,
-    topic VARCHAR(25) DEFAULT NULL,
-    category VARCHAR(30) DEFAULT NULL
+    tirage INT NOT NULL,
+    topic VARCHAR(25) NOT NULL,
+    category VARCHAR(30) NOT NULL
 )ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
 
 CREATE INDEX idx_code on books(code_book);
