@@ -1,0 +1,26 @@
+SELECT N, code_book, new, book_title, price, pages FROM books;
+SELECT * FROM `books` WHERE 1;
+SELECT code_book, book_title, new, pages, price, N FROM books;
+SELECT * FROM books LIMIT 10;
+SELECT DISTINCT code_book FROM books;
+SELECT * FROM books WHERE new='Yes';
+SELECT * FROM books WHERE new='Yes' AND price BETWEEN 20 AND 30;
+SELECT * FROM books WHERE new='Yes' AND price NOT BETWEEN 20 AND 30;
+SELECT * FROM books WHERE pages BETWEEN 300 AND 400 AND price BETWEEN 20 AND 30;
+SELECT * FROM books WHERE date_book BETWEEN CAST('2000-01-01' AS DATE) AND CAST('2000-02-29' AS DATE) OR date_book BETWEEN CAST('2000-12-01' AS DATE) AND CAST('2000-12-31' AS DATE);
+SELECT * FROM books WHERE code_book IN(5110, 5141, 4985, 4241);
+SELECT * FROM books WHERE YEAR(date_book)IN(1999,2001,2003,2005);
+SELECT * FROM books WHERE book_title>='À' AND book_title<'Ë';
+SELECT * FROM books WHERE book_title LIKE 'ÀÏÏ%' AND date_book LIKE '2000%' AND price<20;
+SELECT * FROM books WHERE book_title LIKE 'ÀÏÏ%Å' AND date_book BETWEEN CAST('2000-01-01' AS DATE) AND CAST('2000-06-30' AS DATE);
+SELECT * FROM books WHERE book_title LIKE '%Microsoft%' AND book_title NOT LIKE '%Windows%';
+SELECT * FROM books WHERE book_title RLIKE '[0-9]';
+SELECT * FROM books WHERE book_title RLIKE '.*[0-9].*[0-9].*[0-9].*';
+SELECT * FROM `book_accountance` WHERE book_title RLIKE '.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*' AND book_title NOT RLIKE '.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*';
+
+
+
+
+
+
+
