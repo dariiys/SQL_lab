@@ -1,0 +1,13 @@
+ALTER TABLE books ADD book_author VARCHAR(15);
+
+ALTER TABLE books MODIFY COLUMN book_author VARCHAR(20);
+
+ALTER TABLE books DROP COLUMN book_author;
+
+SELECT * FROM books ORDER BY code_book ASC;
+
+DROP INDEX idx_code ON books;
+
+CREATE UNIQUE INDEX idx_code ON books (code_book);
+
+ALTER TABLE books DROP INDEX idx_code;
