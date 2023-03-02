@@ -1,0 +1,19 @@
+SELECT * FROM `books` WHERE price IS NULL OR price = 0.00;
+SELECT * FROM `books` WHERE price IS NOT NULL AND tirage IS NULL;
+SELECT * FROM `books` WHERE date_book IS NULL;
+SELECT * FROM `books` WHERE (NOW() - `date_book`) <= 365;
+SELECT * FROM `books` WHERE New<=>'Yes' ORDER BY price ASC;
+SELECT * FROM `books` WHERE pages BETWEEN 300 AND 400 ORDER BY book_title DESC;
+SELECT * FROM `books` WHERE price BETWEEN 20 AND 40 ORDER BY date_book DESC;
+SELECT * FROM `books` ORDER BY book_title ASC, price DESC;
+SELECT * FROM `books` WHERE (`price` / `pages`) < 0.10
+SELECT LENGTH(`book_title`) as `N`, UPPER(LEFT(`book_title`, 20)) AS `Name`  FROM `books`;
+SELECT UPPER(CONCAT(LEFT(book_title, 10), '...', RIGHT(book_title, 10))) AS `N` FROM `books`;
+SELECT book_title AS `name`, date_book AS `date`, DAYNAME(date_book) AS `Day`, MONTHNAME(date_book) AS `month`, YEAR(date_book) AS `Year` FROM `books`;
+SELECT book_title AS `title`, date_book AS `date 1`, DATE_FORMAT(date_book, '%d/%m/%Y') AS `date 2` FROM `books`;
+SELECT code_book AS `код`, price AS `прайс`, `price`*36.73 AS `грн`, `price`*0.94 AS `євро`, `price`*76.16 AS `руб` FROM `books`;
+SELECT code_book AS `Код`, price AS `цена`, TRUNCATE(price*36.73, 0) AS `без копеек`, ROUND(price*36.73, 0) AS `округлено` FROM `books`;
+INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `price`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (249, 2111, 'No', 'Сад кісток', 17.67, 'Routledge', 360, NULL, '2018-11-24', 6000, 'Художня література', 'Детектив');
+INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (379, 3111, 'No', 'про колір', 'Routledge', 375, NULL, '2019-04-12', 2000, ' ЛІТЕРАТУРА NON-FICTION', 'наукова');
+DELETE FROM `books` WHERE YEAR(date_book)<1990;
+UPDATE `books` SET `New`='Yes' WHERE YEAR(date_book)>2005;
