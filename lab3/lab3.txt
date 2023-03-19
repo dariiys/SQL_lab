@@ -1,4 +1,4 @@
-SELECT * FROM `books` WHERE price IS NULL OR price = 0.00;
+ï»¿SELECT * FROM `books` WHERE price IS NULL OR price = 0.00;
 SELECT * FROM `books` WHERE price IS NOT NULL AND tirage IS NULL;
 SELECT * FROM `books` WHERE date_book IS NULL;
 SELECT * FROM `books` WHERE (NOW() - `date_book`) <= 365;
@@ -11,9 +11,9 @@ SELECT LENGTH(`book_title`) as `N`, UPPER(LEFT(`book_title`, 20)) AS `Name`  FRO
 SELECT UPPER(CONCAT(LEFT(book_title, 10), '...', RIGHT(book_title, 10))) AS `N` FROM `books`;
 SELECT book_title AS `name`, date_book AS `date`, DAYNAME(date_book) AS `Day`, MONTHNAME(date_book) AS `month`, YEAR(date_book) AS `Year` FROM `books`;
 SELECT book_title AS `title`, date_book AS `date 1`, DATE_FORMAT(date_book, '%d/%m/%Y') AS `date 2` FROM `books`;
-SELECT code_book AS `êîä`, price AS `ïðàéñ`, `price`*36.73 AS `ãðí`, `price`*0.94 AS `ºâðî`, `price`*76.16 AS `ðóá` FROM `books`;
-SELECT code_book AS `Êîä`, price AS `öåíà`, TRUNCATE(price*36.73, 0) AS `áåç êîïååê`, ROUND(price*36.73, 0) AS `îêðóãëåíî` FROM `books`;
-INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `price`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (249, 2111, 'No', 'Ñàä ê³ñòîê', 17.67, 'Routledge', 360, NULL, '2018-11-24', 6000, 'Õóäîæíÿ ë³òåðàòóðà', 'Äåòåêòèâ');
-INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (379, 3111, 'No', 'ïðî êîë³ð', 'Routledge', 375, NULL, '2019-04-12', 2000, ' Ë²ÒÅÐÀÒÓÐÀ NON-FICTION', 'íàóêîâà');
+SELECT code_book AS `ÐºÐ¾Ð´`, price AS `Ð¿Ñ€Ð°Ð¹Ñ`, `price`*36.73 AS `Ð³Ñ€Ð½`, `price`*0.94 AS `Ñ”Ð²Ñ€Ð¾`, `price`*76.16 AS `Ñ€ÑƒÐ±` FROM `books`;
+SELECT code_book AS `ÐšÐ¾Ð´`, price AS `Ñ†ÐµÐ½Ð°`, TRUNCATE(price*36.73, 0) AS `Ð±ÐµÐ· ÐºÐ¾Ð¿ÐµÐµÐº`, ROUND(price*36.73, 0) AS `Ð¾ÐºÑ€ÑƒÐ³Ð»ÐµÐ½Ð¾` FROM `books`;
+INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `price`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (249, 2111, 'No', 'Ð¡Ð°Ð´ ÐºÑ–ÑÑ‚Ð¾Ðº', 17.67, 'Routledge', 360, NULL, '2018-11-24', 6000, 'Ð¥ÑƒÐ´Ð¾Ð¶Ð½Ñ Ð»Ñ–Ñ‚ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð°', 'Ð”ÐµÑ‚ÐµÐºÑ‚Ð¸Ð²');
+INSERT INTO books (`N`, `code_book`, `new`, `book_title`, `publisher`, `pages`, `format`, `date_book`, `tirage`, `topic`, `category`) VALUE (379, 3111, 'No', 'Ð¿Ñ€Ð¾ ÐºÐ¾Ð»Ñ–Ñ€', 'Routledge', 375, NULL, '2019-04-12', 2000, ' Ð›Ð†Ð¢Ð•Ð ÐÐ¢Ð£Ð Ð NON-FICTION', 'Ð½Ð°ÑƒÐºÐ¾Ð²Ð°');
 DELETE FROM `books` WHERE YEAR(date_book)<1990;
 UPDATE `books` SET `New`='Yes' WHERE YEAR(date_book)>2005;
