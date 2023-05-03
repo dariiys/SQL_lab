@@ -1,0 +1,97 @@
+﻿//1. Вивести значення наступних колонок: назва книги, ціна, назва видавництва. Використовувати внутрішнє з'єднання, застосовуючи where.
+SELECT books.book_title, books.price, publishers.name FROM books, publishers WHERE books.publisher=publishers.id;
+
+//2. Вивести значення наступних колонок: назва книги, назва категорії. Використовувати внутрішнє з'єднання, застосовуючи inner join.
+SELECT books.book_title,categories.name
+FROM books INNER JOIN categories ON books.category = categories.id
+
+//3. Вивести значення наступних колонок: назва книги, ціна, назва видавництва, формат.
+SELECT books.book_title, books.price, publishers.name, books.format
+FROM books JOIN publishers ON books.publisher = publishers.id;
+
+//4. Вивести значення наступних колонок: тема, категорія, назва книги, назва видавництва. Фільтр по темам і категоріям.
+SELECT
+topic.name AS topic, categories.name AS categorie, books.book_title AS book_title, publishers.name AS publishers
+FROM books
+JOIN topic ON books.topic = topic.id JOIN categories ON books.category = categories.id JOIN publishers ON books.publisher = publishers.id
+WHERE topic.name = 'Операційні системи' AND categories.name = 'Windows 2000';
+
+//5. Вивести книги видавництва 'BHV', видані після 2000 р
+SELECT books.book_title, publishers.name, YEAR(books.date_book) AS date_book 
+FROM books INNER JOIN publishers ON publishers.id 
+= books.publisher 
+WHERE publishers.name LIKE 'BHV%' AND YEAR(books.date_book)>2000
+
+//6. Вивести загальну кількість сторінок по кожній назві категорії. Фільтр по спадаючій кількості сторінок.
+SELECT SUM(books.pages) AS pages, categories.name 
+FROM books INNER JOIN categories ON books.category = categories.id 
+GROUP BY categories.name ORDER BY SUM(books.pages) DESC
+
+//7. Вивести середню вартість книг по темі 'Використання ПК' і категорії 'Linux'.
+SELECT AVG(books.price) AS `cередня ціна`, topic.name AS `використання ПК`, categories.name AS `Linux` 
+FROM books INNER JOIN topic INNER JOIN categories ON books.topic = topic.id AND books.category = categories.id 
+WHERE topic.name LIKE '%Використання ПК%' AND categories.name = 'Linux' 
+GROUP BY topic.name, categories.name
+
+//8. Вивести всі дані універсального відношення. Використовувати внутрішнє з'єднання, застосовуючи where.
+SELECT books.N, books.code_book, books.book_title, books.new, books.price, books.pages, books.format, books.date_book, books.tirage, topic.name, categories.name, publishers.name 
+
+FROM books,categories, publishers, topic
+WHERE books.topic = topic.id 
+AND books.category= categories.id 
+AND books.publisher=publishers.id
+
+//9. Вивести всі дані універсального відношення. Використовувати внутрішнє з'єднання, застосовуючи inner join.
+SELECT books.N, books.code_book, books.book_title, books.new, books.price, books.pages, books.format, books.date_book, books.tirage, topic.name, categories.name, publishers.name 
+
+FROM books INNER JOIN topic INNER JOIN categories INNER JOIN publishers ON books.topic=topic.id 
+AND books.category=categories.id 
+AND books.publisher =publishers.id;
+
+//10. Вивести всі дані універсального відношення. Використовувати зовнішнє з'єднання, застосовуючи left join / rigth join.
+SELECT books.N, books.code_book, books.book_title, books.new, books.price, books.pages, books.format, books.date_book, books.tirage, topic.name, categories.name, publishers.name 
+FROM books
+LEFT JOIN topic      ON books.topic= topic.id 
+LEFT JOIN categories ON books.category= categories.id 
+LEFT JOIN publishers ON books.publisher= publishers.id;
+
+SELECT books.N, books.code_book, books.book_title, books.new, books.price, books.pages, books.format, books.date_book, books.tirage, topic.name, categories.name, publishers.name 
+FROM books
+RIGHT JOIN topic ON books.topic=topic.id 
+RIGHT JOIN categories ON books.category=categories.id 
+RIGHT JOIN publishers ON books.publisher=publishers.id;
+
+//11. Вивести пари книг, що мають однакову кількість сторінок. Використовувати само об’єднання і аліаси (self join).
+SELECT DISTINCT books1.book_title '1 книга', books2.book_title '2 книга' 
+FROM books books1 JOIN books books2 ON books1.pages = books2.pages AND books1.N != books2.N
+
+//12. Вивести тріади книг, що мають однакову ціну. Використовувати самооб'єднання і аліаси (self join).
+SELECT DISTINCT m1.book_title '1 книга', m2.book_title '2книга', m3.book_title '3книга' 
+FROM books m1 JOIN books m2 ON m1.price = m2.price 
+AND m1.N != m2.N JOIN books m3 ON m1.price = m3.price AND m1.N != m3.N
+
+13. Вивести всі книги категорії 'C ++'. Використовувати підзапити (subquery).
+SELECT * FROM books WHERE category = (SELECT id FROM categories WHERE categories.name = 'C&C++');
+
+14. Вивести книги видавництва 'BHV', видані після 2000 р Використовувати підзапити (subquery).
+SELECT * from books WHERE publisher = (SELECT id from publishers 
+                                          WHERE publishers.name = 'BHV') AND YEAR(date_book) > 2000;
+
+15. Вивести список видавництв, у яких розмір книг перевищує 400 сторінок. Використовувати пов'язані підзапити (correlated subquery).
+SELECT * FROM publishers WHERE (SELECT MIN(pages) FROM books WHERE books.publisher = publishers.id) > 400;
+
+16. Вивести список категорій в яких більше 3-х книг. Використовувати пов'язані підзапити (correlated subquery).
+SELECT * FROM categories WHERE (SELECT COUNT(*) FROM books WHERE books.category = categories.id) > 3;
+
+17. Вивести список книг видавництва 'BHV', якщо в списку є хоча б одна книга цього видавництва. Використовувати exists.
+SELECT * FROM books
+WHERE EXISTS (SELECT*FROM publishers WHERE publishers.name = 'BHV' AND publishers.id = books.publisher);
+
+18. Вивести список книг видавництва 'BHV', якщо в списку немає жодної книги цього видавництва. Використовувати not exists.
+SELECT * FROM books WHERE NOT EXISTS (SELECT * FROM publishers WHERE publishers.name = 'BHV' AND publishers.id = books.publisher) AND publisher = (SELECT publishers.id FROM publishers WHERE publishers.name = 'BHV');
+
+19. Вивести відсортований загальний список назв тем і категорій. Використовувати union.
+(SELECT * FROM topic) UNION (SELECT * FROM categories) ORDER BY name
+
+20. Вивести відсортований в зворотному порядку загальний список перших слів, назв книг і категорій що не повторюються. Використовувати union.
+SELECT DISTINCT books FROM ((SELECT REGEXP_SUBSTR(TRIM(book_title), '^[^\\s]+') AS title FROM books) UNION ALL(SELECT REGEXP_SUBSTR(TRIM(name), '^[^\\s]+') as name FROM categories)) ORDER BY name DESC;
