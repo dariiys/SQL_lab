@@ -1,0 +1,175 @@
+﻿//1.вивести значення наступних колонок: назва книги, ціна, назва видавництва, формат.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books //
+CREATE PROCEDURE info_books()
+BEGIN
+SELECT book_title AS title, price, publishers.name AS publisher FROM books JOIN publishers
+  ON books.publisher = publishers.id;
+END //
+DELIMITER ;
+CALL info_books;
+
+//2.Вивести значення наступних колонок: тема, категорія, назва книги, назва видавництва. Фільтр по темам і категоріям.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books2 //
+CREATE PROCEDURE info_books2()
+BEGIN
+SELECT book_title, price, publishers.name AS publisher, topic.name AS topic, categories.name AS category FROM books JOIN publishers
+    ON books.publisher = publishers.id JOIN topic ON books.topic = topic.id JOIN categories ON categories.id = books.category;
+END //
+DELIMITER ;
+CALL info_books2;
+
+//3. Вивести книги видавництва 'BHV',видані після 2000р
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books3 //
+CREATE PROCEDURE info_books3(id int, dat int)
+BEGIN
+  SELECT * FROM books WHERE publisher = id AND YEAR(date_book) > dat;
+END //
+DELIMITER ;
+CALL info_books3(2, 2000);
+
+//4. Вивести загальну кількість сторінок по кожній назві категорії. Фільтр по спадаючій / зростанню кількості сторінок.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books4 //
+CREATE PROCEDURE info_books4()
+BEGIN
+  SELECT categories.name AS category, SUM(pages) AS summa FROM books JOIN categories ON books.category = categories.id GROUP BY category ORDER BY pages;
+END //
+DELIMITER ;
+CALL info_books4;
+
+//5. Вивести середню вартість книг по темі 'Використання ПК' і категорії 'Linux'.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books5 //
+CREATE PROCEDURE info_books5(id int, id_top int, OUT count int)
+BEGIN
+  SELECT AVG(price) INTO count FROM books WHERE books.topic = id AND books.category = id;
+END //
+DELIMITER ;
+CALL info_books5(2, 7, @count);
+SELECT @count as average;
+
+//6. Вивести всі дані універсального відношення.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books6 //
+CREATE PROCEDURE info_books6()
+BEGIN
+  SELECT books.*, publishers.name AS publisher, categories.name AS category, topic.name AS topic FROM books
+  LEFT JOIN publishers ON publishers.id = books.publisher LEFT JOIN categories ON categories.id = books.category
+  LEFT JOIN topic ON topic.id = books.topic;
+END //
+DELIMITER ;
+CALL info_books6;
+
+//7. Вивести пари книг, що мають однакову кількість сторінок
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books7 //
+CREATE PROCEDURE info_books7()
+BEGIN
+  SELECT DISTINCT bk.book_title as book_title1, bk2.book_title book_title2 FROM books bk
+  JOIN books bk2
+    ON bk.pages = bk2.pages AND bk.N != bk2.N;
+END //
+DELIMITER ;
+CALL info_books7;
+
+//8.Вивести тріади книг, що мають однакову ціну
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books8 //
+CREATE PROCEDURE info_books8()
+BEGIN
+  SELECT DISTINCT m.book_title as 1_book_title, m2.book_title 2_book_title, m3.book_title 3_book_title FROM books m
+  JOIN books m2 ON m.price = m2.price AND m.N != m2.N
+  JOIN books m3 ON m.price = m3.price AND m.N != m3.N;
+END //
+DELIMITER ;
+CALL info_books8;
+
+//9.Вивести всі книги категорії 'C ++'.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books9 //
+CREATE PROCEDURE info_books9(c_name varchar(256))
+BEGIN
+  SELECT * from books WHERE category = (SELECT id from categories WHERE categories.name = c_name);
+END //
+DELIMITER ;
+CALL info_books9('C&C++');
+
+//10.Вивести список видавництв, у яких розмір книг перевищує 400 сторінок
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books10 //
+CREATE PROCEDURE info_books10(min_pages int)
+BEGIN
+  SELECT * FROM publishers WHERE (SELECT MIN(pages) FROM books WHERE books.publisher = publishers.id) > min_pages;
+END //
+DELIMITER ;
+CALL info_books10(400);
+
+//11. Вивести список категорій за якими більше 3-х книг
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books11 //
+CREATE PROCEDURE info_books11(min_books_count int)
+BEGIN
+  SELECT * FROM categories WHERE (SELECT COUNT(*) FROM books WHERE books.category = categories.id) > min_books_count;
+END //
+DELIMITER ;
+CALL info_books11(3);
+
+//Вивести список книг видавництва 'BHV', якщо в списку є хоча б одна книга цього видавництва.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books12 //
+CREATE PROCEDURE info_books12(pub_name varchar(256))
+BEGIN
+  SELECT * FROM books WHERE EXISTS (SELECT * FROM publishers WHERE publishers.name = name AND publishers.id = books.publisher);
+END //
+DELIMITER ;
+CALL info_books12('BHV');
+
+//13. Вивести список книг видавництва 'BHV', якщо в списку немає жодної книги цього видавництва.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books13 //
+CREATE PROCEDURE info_books13(pub_name varchar(255))
+BEGIN
+  SELECT * FROM books WHERE NOT EXISTS (SELECT * FROM publishers 
+                                        WHERE publishers.name = name AND publishers.id = books.publisher)
+    AND publisher = (SELECT publishers.id FROM publishers 
+                     WHERE publishers.name = name);
+END //
+DELIMITER ;
+CALL info_books13('BHV');
+
+//14. Вивести відсортоване загальний список назв тем і категорій.
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books14 //
+CREATE PROCEDURE info_books14() 
+BEGIN
+	(SELECT * FROM publishers)
+	UNION
+	(SELECT * FROM categories)
+	ORDER BY name;
+END //
+DELIMITER ;
+
+CALL info_books14();
+
+//15. 
+DELIMITER //
+DROP PROCEDURE IF EXISTS info_books15 //
+CREATE PROCEDURE info_books15()
+BEGIN
+  SELECT DISTINCT name FROM ((SELECT REGEXP_SUBSTR(TRIM(book_title), '^[^\\s]+') 
+	FROM books)
+    UNION ALL(SELECT REGEXP_SUBSTR(TRIM(category_name), '^[^\\s]+') 
+	FROM categories)) names
+  ORDER BY name DESC;
+END //
+DELIMITER ;
+CALL info_books15();
+
+
+
+
+
+

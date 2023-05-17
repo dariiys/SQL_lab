@@ -1,0 +1,66 @@
+﻿//1.Розробити та перевірити скалярну (scalar) функцію, що повертає загальну вартість книг виданих в певному році.
+CREATE FUNCTION dbo.booksPriceInYear (@yearToFind INT)
+RETURNS DECIMAL
+AS
+BEGIN
+	DECLARE @sumprice DECIMAL; SELECT @sumprice = SUM(price) FROM books WHERE YEAR(date_book) = @yearToFind RETURN @sumprice;
+END;
+
+//2.Розробити і перевірити табличну (inline) функцію, яка повертає список книг виданих в певному році.
+CREATE FUNCTION dbo.booksPublisherInYear(@PubYear INT)
+RETURNS TABLE
+AS RETURN (SELECT * FROM books WHERE YEAR(date_book) = @PubYear);
+
+//3. Розробити і перевірити функцію типу multi-statement, яка буде:
+a. приймати в якості вхідного параметра рядок, що містить список назв видавництв, розділених символом ‘;’;
+b. виділяти з цього рядка назву видавництва;
+c. формувати нумерований список назв видавництв.
+
+CREATE FUNCTION dbo.publisherList(@Input NVARCHAR(MAX))
+RETURNS @result TABLE (Topic NVARCHAR(MAX)) AS
+BEGIN
+	DECLARE @temp NVARCHAR(MAX);
+	IF (RIGHT(@Input,1)<>';') SET @Input=CONCAT(@Input, ';');
+	WHILE CHARINDEX(';', @Input)>0
+	BEGIN
+		SET @temp=REPLACE(SUBSTRING(@Input, 1, CHARINDEX(';', @Input)), ';', '');
+		INSERT INTO @result (Topic) VALUES (@temp);
+		SET @Input = REPLACE(@Input, @temp+';', '');
+	END;
+	RETURN;
+END;
+
+
+DECLARE @string NVARCHAR(MAX);
+SELECT @string = STRING_AGG(publishers, ';') FROM publishers;
+SELECT * from dbo.PublisherList(@string);
+
+//. Виконати набір операцій по роботі з SQL курсором: оголосити курсор;
+//a. використовувати змінну для оголошення курсору;
+//b. відкрити курсор;
+//c. переприсвоїти курсор іншої змінної;
+//d. виконати вибірку даних з курсору;
+//e. закрити курсор;
+
+USE shop;
+DECLARE @btitle NVARCHAR(MAX), @date DATE;
+
+DECLARE cursor_getBooks CURSOR
+FOR SELECT book_title, date_book FROM books;
+
+OPEN cursor_getBooks;
+
+FETCH NEXT FROM cursor_getBooks INTO @btitle, @date;
+
+WHILE @@FETCH_STATUS = 0
+    BEGIN
+		IF (YEAR(@date)=2000)
+			PRINT @btitle + ' ' + CAST(YEAR(@date) AS NVARCHAR(30));
+		FETCH NEXT FROM cursor_getBooks INTO @btitle, @date;
+    END;
+
+//5. звільнити курсор. Розробити курсор для виводу списка книг виданих у визначеному році.
+
+CLOSE cursor_getBooks;
+
+DEALLOCATE cursor_getBooks;
