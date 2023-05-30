@@ -1,0 +1,50 @@
+CREATE DATABASE IF NOT EXISTS grade; 
+CREATE TYPE StudentGrade AS TINYINT NULL; //1 Створити користувальницький тип даних для зберігання оцінки учня на основі стандартного типу tinyint з можливістю використання порожніх
+значень.
+CREATE GradeDefault AS 3 DEFAULT; //2. Створити об'єкт-замовчування (default) зі значенням 3.
+CREATE TABLE student_name (
+    N INT NOT NULL PRIMARY KEY,
+    st_name VARCHAR(100) NOT NULL DEFAULT '',
+    grade FLOAT(4,2)
+)ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
+INSERT INTO student_name (
+    N,
+  	st_name,
+    grade
+)
+VALUES
+(1, Гурнік Артем, 89),
+(2, Кушнаренко Андрій, 100),
+(3, Шамрай Катерина, 67);
+ALTER TABLE student_name ALTER COLUMN st_name SET DEFAULT(SELECT GradeDefault); //3. Зв'язати об'єкт-замовчування з призначеним для користувача типом даних для оцінки.
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS                                        //4. Отримати інформацію про призначений для користувача тип даних.
+WHERE TABLE_NAME = 'student_name' AND COLUMN_NAME = 'st_name';
+CREATE RULE GradeRule AS @grade >= 1 AND @grade <= 5;                           //5. Створити об'єкт-правило (rule): a> = 1 і a <= 5 і зв'язати його з призначеним для користувача типом даних для оцінки.
+
+CREATE TABLE Student_success                       //6. Створити таблицю "Успішність студента", використовуючи новий тип даних. У таблиці повинні бути оцінки студента з кількох предметів.
+(
+    id TINYINT,
+    st_name VARCHAR(100),
+    Math INT NOT NULL,
+    Science INT NOT NULL,
+    History INT NOT NULL
+);
+INSERT INTO student_name (
+    id,
+  	st_name,
+    Math,
+    Science,
+    History
+)
+VALUES
+(1, Гурнік Артем, 89, 95, 60),
+(2, Кушнаренко Андрій, 100, 70, 90),
+(3, Шамрай Катерина, 67, 100, 80);
+
+
+ALTER TABLE student_name DROP COLUMN GradeDefault DEFAULT;   //7. Скасувати всі прив'язки і видалити з бази даних тип даних користувача, замовчування і правило.
+DROP RULE GradeRule;
+DROP TABLE Student_success;
+
+
+
