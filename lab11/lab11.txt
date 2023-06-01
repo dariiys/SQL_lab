@@ -1,0 +1,93 @@
+//3. Інформаційна система медичних організацій міста
+CREATE DATABASE medical;
+
+CREATE TABLE diagnosis
+(
+  id SMALLINT(2) NOT NULL UNIQUE AUTO_INCREMENT,
+  diagnosis VARCHAR(25),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE methods
+(
+  id SMALLINT(2) NOT NULL UNIQUE AUTO_INCREMENT,
+  method VARCHAR(25),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE patients
+(
+  id SMALLINT(5) NOT NULL UNIQUE AUTO_INCREMENT,
+  name VARCHAR(25),
+  lastname VARCHAR(25),
+  born_date DATE,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE medcards
+(
+  id SMALLINT(5) NOT NULL UNIQUE AUTO_INCREMENT,
+  patient_id SMALLINT(5),
+  date DATE,
+  diag_id SMALLINT(2),
+  method_id SMALLINT(2),
+  PRIMARY KEY(id),
+  FOREIGN KEY(diag_id) REFERENCES diagnosis(id),
+  FOREIGN KEY(method_id) REFERENCES methods(id),
+  FOREIGN KEY(patient_id) REFERENCES patients(id)
+);
+
+INSERT INTO patients (name, lastname, born_date) VALUE
+('Шамрай', 'Катерина', '2004/01/18'),
+('Кудрявцева', 'Даша', '2001/02/12'),
+('Головач', 'Вероніка', '1990/05/09'),
+('Покидько', 'Тетяна', '2000/01/11'),
+('Яцків', 'Даша', '1992/08/23'),
+('Коваленко', 'Олексій', '2001/09/14'),
+('Опр', 'Олексій', '1976/07/19'),
+('Чечені', 'Микита', '1986/04/04'),
+
+INSERT INTO diagnosis(diagnosis)
+VALUES
+('Діарея'),
+('Рак'),
+('Інсульт'),
+('Панкреатит'),
+('Хвороба нирок'),
+('Дерматоз'),
+('Нефроптоз'),
+('Волчанка');
+
+INSERT INTO methods(method)
+VALUES 
+('госпіталізація'),
+('Фізіотерапія'),
+('Хіміотерапія'),
+('ліка'),
+('крапельниця'),
+('постільний режим');
+
+INSERT INTO medcards(patient_id, date, diag_id, method_id) VALUES
+(1, '2012/05/13', 3, 4),
+(2, '2016/03/10', 5, 6),
+(3, '2010/08/24', 8, 3),
+(4, '2018/10/03', 4, 2),
+(5, '2008/02/26', 1, 5),
+(6, '2019/11/12', 7, 1),
+(7, '2010/04/25', 5, 2),
+(8, '2009/01/07', 8, 6),
+
+CREATE PROCEDURE ShowAll()
+SELECT medcards.date, patients.name, patients.lastname, patients.born_date, diagnosis.diagnosis, methods.method FROM medcards, patients, diagnosis, methods WHERE medcards.patient_id=patients.id AND medcards.diag_id=diagnosis.id AND medcards.method_id=methods.id ORDER BY medcards.date ASC;
+
+CREATE PROCEDURE ShowByDiagnosis(IN diag VARCHAR(25))
+SELECT diagnosis.diagnosis, medcards.date, patients.name, patients.lastname, patients.born_date, methods.method FROM medcards, patients, diagnosis, methods WHERE medcards.patient_id=patients.id AND medcards.diag_id=diagnosis.id AND medcards.method_id=methods.id AND diagnosis.diagnosis LIKE diag;
+
+CREATE PROCEDURE ShowByMethods(IN meth VARCHAR(25))
+SELECT methods.method, medcards.date, patients.name, patients.lastname, patients.born_date, diagnosis.diagnosis FROM medcards, patients, diagnosis, methods WHERE medcards.patient_id=patients.id AND medcards.diag_id=diagnosis.id AND medcards.method_id=methods.id AND methods.method LIKE meth;
+
+CREATE PROCEDURE CountByDiagnosis(IN diag VARCHAR(25))
+SELECT diagnosis.diagnosis, COUNT(medcards.id) FROM diagnosis, medcards WHERE medcards.diag_id=diagnosis.id AND diagnosis.diagnosis LIKE diag;
+
+CREATE PROCEDURE CountByMethod(IN meth VARCHAR(25))
+SELECT methods.method, COUNT(medcards.id) FROM methods, medcards WHERE medcards.method_id=methods.id AND methods.method LIKE meth;
